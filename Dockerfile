@@ -14,14 +14,15 @@ RUN apt-get update && \
   apt-get install -y gpg-agent \
   apt-transport-https \
   ca-certificates \
-  curl software-properties-common \
+  curl \
+  software-properties-common \
   wget \
   openssh-client
 # install docker
-RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
-  add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
+RUN curl -fsSL "https://download.docker.com/linux/$(lsb_release -is | awk '{print tolower($0)}')/gpg" | apt-key add - && \
+  add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/$(lsb_release -is | awk '{print tolower($0)}') $(lsb_release -cs) stable" && \
   apt-get update && \
-  apt-get install -y docker-ce lsb-release
+  apt-get install -y docker-ce
 
 # https://packages.chef.io/files/stable/chefdk/3.6.57/debian/9/chefdk_3.6.57-1_amd64.deb
 RUN wget --quiet --content-disposition "http://packages.chef.io/files/${CHANNEL}/chefdk/${CHEF_VERSION}/$(lsb_release -is | awk '{print tolower($0)}')/$(lsb_release -rs | awk -F'.' '{print $1}')/chefdk_${CHEF_VERSION}-1_amd64.deb" -O /tmp/chefdk.deb && \
